@@ -4,7 +4,8 @@ import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
-import { rimraf } from 'mz-modules';
+import * as pump from 'pump';
+// import { rimraf } from 'mz-modules';
 
 interface ILottieJSONAsset {
   id: string;
@@ -54,6 +55,19 @@ interface ILottieJSON {
 export const pack = async (source: string, dest: string) => {
   await compressing.zip.compressDir(source, dest);
 };
+const handleError = error => {
+  console.log('error', error);
+};
+// 压缩文件夹里面的lottie内容 zip 到指定目录
+export const packLottie = async (source: string, dest: string) => {
+  console.log('packLottie');
+  const zipStream = new compressing.zip.Stream();
+  zipStream.addEntry(path.join(source, 'data.json'));
+  zipStream.addEntry(path.join(source, 'images'));
+  const destStream = fs.createWriteStream(dest);
+  await pump(zipStream, destStream, handleError);
+};
+
 const randomSavePath = (pathname: string, ext?: string): string => {
   const hash = crypto.randomBytes(32).toString('hex');
   const basePath = path.join(pathname, hash, 'lottiezip');
@@ -106,16 +120,18 @@ export const zipJSON = async (lottieData: string, options?: object) => {
   const complateLottieData = JSON.stringify(lottieObj);
   const compressLottieBuffer = Buffer.from(complateLottieData);
   // buffer 写入临时文件
-  const lottieFilePath = path.join(tempDist, 'lottie.json');
+  const lottieFilePath = path.join(tempDist, 'data.json');
   fs.writeFileSync(lottieFilePath, compressLottieBuffer);
   // 压缩文件
   // const zipDist = randomSavePath(defaultOptions.zipPath, '.zip');
   const zipDist = path.join(defaultOptions.zipPath, 'lottie-1.zip');
-  await pack(tempDist, zipDist);
-  const uploadBuffer = fs.readFileSync(zipDist);
+  await packLottie(tempDist, zipDist);
+  console.log('zipDist', zipDist);
+  const zipBuffer = fs.readFileSync(zipDist);
+  console.log(zipBuffer);
   // await rimraf(tempDist);
   // await rimraf(path.dirname(zipDist));
-  return uploadBuffer;
+  return zipBuffer;
 };
 
 export default zipJSON;
