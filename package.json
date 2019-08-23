@@ -13,8 +13,22 @@
     "dev:w": "tsc --watch",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "lottie",
+    "tiny",
+    "lottie zip"
+  ],
+  "author": "chenpx976",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lottie-Lint/lottie-zip"
+  },
+  "contributors": [
+    {
+      "name": "chenpx976",
+      "email": "chenpx976@gmail.com"
+    }
+  ],
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^12.7.2",
