@@ -1,4 +1,10 @@
 
+1.0.2 / 2019-08-23
+==================
+
+**features**
+  * [[`7d528da`](http://github.com/Lottie-Lint/lottie-zip/commit/7d528da383cc6ba4652531b91e86a681534bfb01)] - feat: 切换压缩方式 (chenpx976 <<chenpx976@gmail.com>>)
+
 1.0.1 / 2019-08-23
 ==================
 
