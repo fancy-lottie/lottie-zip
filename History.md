@@ -1,4 +1,10 @@
 
+1.0.3 / 2019-09-25
+==================
+
+**features**
+  * [[`49be1c8`](http://github.com/Lottie-Lint/lottie-zip/commit/49be1c856ac729fe8c6591013f3d3da01813a9d8)] - feat: 优化代码结构 (chenpx976 <<chenpx976@gmail.com>>)
+
 1.0.2 / 2019-08-23
 ==================
 
