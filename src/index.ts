@@ -5,7 +5,7 @@ import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import * as pump from 'pump';
-// import { rimraf } from 'mz-modules';
+import { rimraf } from 'mz-modules';
 
 interface ILottieJSONAsset {
   id: string;
@@ -52,35 +52,37 @@ interface ILottieJSON {
 }
 
 // 压缩文件夹为 zip 到指定目录
-export const pack = async (source: string, dest: string) => {
-  await compressing.zip.compressDir(source, dest);
-};
+// const pack = async (source: string, dest: string) => {
+//   await compressing.zip.compressDir(source, dest);
+// };
+
 const handleError = error => {
   console.log('error', error);
 };
 // 压缩文件夹里面的lottie内容 zip 到指定目录
-export const packLottie = async (source: string, dest: string) => {
-  console.log('packLottie');
+const packLottie = async (source: string, dest: string) => {
+  // 创建zip流
   const zipStream = new compressing.zip.Stream();
+  // 添加json数据
   zipStream.addEntry(path.join(source, 'data.json'));
+  // 添加images文件夹
   zipStream.addEntry(path.join(source, 'images'));
+  // 输出流
   const destStream = fs.createWriteStream(dest);
   await pump(zipStream, destStream, handleError);
 };
 
-const randomSavePath = (pathname: string, ext?: string): string => {
+// 生成随机目录
+const randomSavePath = (pathname: string): string => {
   const hash = crypto.randomBytes(32).toString('hex');
   const basePath = path.join(pathname, hash, 'lottiezip');
-  console.log(basePath);
+  // console.log(basePath);
   fse.ensureDirSync(basePath);
   fse.ensureDirSync(basePath + '/images');
-  if (ext) {
-    return path.join(basePath, `lottie${ext}`);
-  }
   return basePath;
 };
 
-export const zipJSON = async (lottieData: string, options?: object) => {
+const zipJSON = async (lottieData: string, options?: object) => {
   const zipPath = os.tmpdir();
   const defaultOptions = {
     zipPath,
@@ -105,7 +107,7 @@ export const zipJSON = async (lottieData: string, options?: object) => {
       // const extname = path.extname(asset.p).substr(1) || 'png';
       // const imageBuffer = await readFilePromise(imagePath);
       const imgFileName = `img_${asset.id}.png`;
-      const imageBase64 =  asset.p.replace(/^data:image\/png;base64,/, '');
+      const imageBase64 = asset.p.replace(/^data:image\/png;base64,/, '');
       fs.writeFileSync(path.join(tempDist, 'images/', imgFileName), imageBase64, 'base64');
       return {
         ...asset,
@@ -117,20 +119,20 @@ export const zipJSON = async (lottieData: string, options?: object) => {
   );
   // const images = assets.filter(item => item.p);
   // 转 buffer
-  const complateLottieData = JSON.stringify(lottieObj);
-  const compressLottieBuffer = Buffer.from(complateLottieData);
+  const compressLottieBuffer = Buffer.from(JSON.stringify(lottieObj));
   // buffer 写入临时文件
   const lottieFilePath = path.join(tempDist, 'data.json');
   fs.writeFileSync(lottieFilePath, compressLottieBuffer);
   // 压缩文件
-  // const zipDist = randomSavePath(defaultOptions.zipPath, '.zip');
-  const zipDist = path.join(defaultOptions.zipPath, 'lottie-1.zip');
+  const zipDist = path.join(defaultOptions.zipPath, 'lottie-compress.zip');
   await packLottie(tempDist, zipDist);
-  console.log('zipDist', zipDist);
+  // console.log('zipDist', zipDist);
   const zipBuffer = fs.readFileSync(zipDist);
-  console.log(zipBuffer);
-  // await rimraf(tempDist);
-  // await rimraf(path.dirname(zipDist));
+  // console.log(zipBuffer);
+  // 删除临时文件
+  await rimraf(tempDist);
+  await rimraf(path.dirname(zipDist));
+  // 返回压缩文件的buffer
   return zipBuffer;
 };
 
