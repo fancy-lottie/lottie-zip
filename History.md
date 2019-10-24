@@ -1,4 +1,10 @@
 
+1.0.5 / 2019-10-24
+==================
+
+**features**
+  * [[`542f9ec`](http://github.com/Lottie-Lint/lottie-zip/commit/542f9ec94a056262a13d48c6c7869a9059b21fff)] - feat: 添加单测和readme (chenpx976 <<chenpx976@gmail.com>>)
+
 1.0.4 / 2019-10-24
 ==================
 
