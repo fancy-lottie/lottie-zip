@@ -51,14 +51,6 @@ interface ILottieJSON {
   markers: ILottieJSONLayer[];
 }
 
-// 压缩文件夹为 zip 到指定目录
-// const pack = async (source: string, dest: string) => {
-//   await compressing.zip.compressDir(source, dest);
-// };
-
-const handleError = error => {
-  console.log('error', error);
-};
 // 压缩文件夹里面的lottie内容 zip 到指定目录
 const packLottie = async (source: string, dest: string) => {
   // 创建zip流
@@ -69,14 +61,19 @@ const packLottie = async (source: string, dest: string) => {
   zipStream.addEntry(path.join(source, 'images'));
   // 输出流
   const destStream = fs.createWriteStream(dest);
-  await pump(zipStream, destStream, handleError);
+  // 等待流执行完毕返回
+  return new Promise((resolve, reject) => {
+    pump(zipStream, destStream, (err) => {
+      if (err) { return reject(err); }
+      resolve();
+    });
+  });
 };
 
 // 生成随机目录
 const randomSavePath = (pathname: string): string => {
-  const hash = crypto.randomBytes(32).toString('hex');
+  const hash = crypto.randomBytes(7).toString('hex');
   const basePath = path.join(pathname, hash, 'lottiezip');
-  // console.log(basePath);
   fse.ensureDirSync(basePath);
   fse.ensureDirSync(basePath + '/images');
   return basePath;
@@ -94,18 +91,13 @@ const zipJSON = async (lottieData: string, options?: object) => {
   lottieObj.assets = await Promise.all(
     lottieObj.assets.map(async asset => {
       // 非 img 数据，则原数据返回
-      if (!asset.u && !asset.p) {
+      if (!asset.p) {
         return asset;
       }
-
-      // 不处理 base64 和远程资源
+      // 不处理 base64 和 远程资源
       if (!asset.p.includes('base64,')) {
         return asset;
       }
-
-      // const imagePath = path.join(lottieDir, asset.u, asset.p);
-      // const extname = path.extname(asset.p).substr(1) || 'png';
-      // const imageBuffer = await readFilePromise(imagePath);
       const imgFileName = `img_${asset.id}.png`;
       const imageBase64 = asset.p.replace(/^data:image\/png;base64,/, '');
       fs.writeFileSync(path.join(tempDist, 'images/', imgFileName), imageBase64, 'base64');
@@ -113,12 +105,11 @@ const zipJSON = async (lottieData: string, options?: object) => {
         ...asset,
         e: 1,
         u: 'images/',
-        p: imgFileName, // TODO: 会不会有jpg
+        p: imgFileName,
       };
     }),
   );
-  // const images = assets.filter(item => item.p);
-  // 转 buffer
+  // json 转 buffer
   const compressLottieBuffer = Buffer.from(JSON.stringify(lottieObj));
   // buffer 写入临时文件
   const lottieFilePath = path.join(tempDist, 'data.json');
@@ -126,9 +117,7 @@ const zipJSON = async (lottieData: string, options?: object) => {
   // 压缩文件
   const zipDist = path.join(defaultOptions.zipPath, 'lottie-compress.zip');
   await packLottie(tempDist, zipDist);
-  // console.log('zipDist', zipDist);
   const zipBuffer = fs.readFileSync(zipDist);
-  // console.log(zipBuffer);
   // 删除临时文件
   await rimraf(tempDist);
   await rimraf(path.dirname(zipDist));
