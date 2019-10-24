@@ -1,4 +1,10 @@
 
+1.0.4 / 2019-10-24
+==================
+
+**fixes**
+  * [[`f0fb3eb`](http://github.com/Lottie-Lint/lottie-zip/commit/f0fb3eb00802b57e7707e94cbb632bdb92fd57fe)] - fix: 修复压缩流处理 (chenpx976 <<chenpx976@gmail.com>>)
+
 1.0.3 / 2019-09-25
 ==================
 
