@@ -80,6 +80,17 @@ const randomSavePath = (pathname: string): string => {
 };
 
 const zipJSON = async (lottieData: string, options?: object) => {
+  let lottieObj;
+  if (typeof lottieData === 'string') {
+    try {
+      lottieObj = JSON.parse(lottieData);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  } else if (typeof lottieData === 'object') {
+    lottieObj = JSON.parse(JSON.stringify(lottieData));
+  }
   const zipPath = os.tmpdir();
   const defaultOptions = {
     zipPath,
@@ -87,7 +98,6 @@ const zipJSON = async (lottieData: string, options?: object) => {
   };
   const tempDist = randomSavePath(defaultOptions.zipPath);
   // 抽取json的图片 base64
-  const lottieObj = JSON.parse(lottieData);
   lottieObj.assets = await Promise.all(
     lottieObj.assets.map(async asset => {
       // 非 img 数据，则原数据返回

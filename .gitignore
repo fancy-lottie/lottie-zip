@@ -2,3 +2,5 @@ node_modules
 lib
 dist
 test/zip/
+test/lottie/
+test/lottie.zip
