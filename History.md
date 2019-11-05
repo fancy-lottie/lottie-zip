@@ -1,4 +1,11 @@
 
+1.0.7 / 2019-11-05
+==================
+
+**others**
+  * [[`d5eedc2`](http://github.com/Lottie-Lint/lottie-zip/commit/d5eedc2a5a92430beb3555a2fba8233a956c7d07)] - ref: 重构使用 stream 做不落盘 zip 操作 (#3) (Ink <<chceyes@gmail.com>>)
+  * [[`250da05`](http://github.com/Lottie-Lint/lottie-zip/commit/250da05e50d9caeda28308f5aaae3613f7199077)] - chore: 直接构建 aa 函数 (nightink <<chceyes@gmail.com>>)
+
 1.0.6 / 2019-11-05
 ==================
 
