@@ -44,8 +44,6 @@
   },
   "dependencies": {
     "compressing": "^1.4.0",
-    "fs-extra": "^8.1.0",
-    "mz-modules": "^2.1.0",
-    "pump": "^3.0.0"
+    "stream-to-buf": "^1.0.0"
   }
 }
