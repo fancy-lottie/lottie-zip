@@ -36,8 +36,8 @@ import lottieZip from 'lottie-zip';
 
 (async () => {
   const lottieZipBuffer = await lottieZip(data, {
-    zipPath: path.join(__dirname, 'zip'),
+    zipPath: os.tmpdir(), // zip临时目录, 默认 os.tmpdir()
+    rmZipDir: false, // 是否删zip临时目录, 默认false
   });
-  fs.writeFileSync(path.join(__dirname, 'lottie.zip'), lottieZipBuffer);
 })();
 ```

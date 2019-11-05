@@ -94,6 +94,7 @@ const zipJSON = async (lottieData: string, options?: object) => {
   const zipPath = os.tmpdir();
   const defaultOptions = {
     zipPath,
+    rmZipDir: false,
     ...options,
   };
   const tempDist = randomSavePath(defaultOptions.zipPath);
@@ -129,8 +130,10 @@ const zipJSON = async (lottieData: string, options?: object) => {
   await packLottie(tempDist, zipDist);
   const zipBuffer = fs.readFileSync(zipDist);
   // 删除临时文件
-  await rimraf(tempDist);
-  await rimraf(path.dirname(zipDist));
+  if (defaultOptions.rmZipDir) {
+    await rimraf(tempDist);
+    await rimraf(path.dirname(zipDist));
+  }
   // 返回压缩文件的buffer
   return zipBuffer;
 };
