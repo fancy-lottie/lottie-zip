@@ -1,11 +1,10 @@
-import { describe, it } from 'mocha';
 import * as assert from 'assert';
 import lottieZip from '../src/index';
 import * as fs from 'fs';
 import * as path from 'path';
 const data = fs.readFileSync(path.resolve(__dirname, 'fixtures/sage.json')).toString();
 
-describe.only('lottieZip', () => {
+describe('lottieZip', () => {
   it('lottieZip', async () => {
     const lottieZipBuffer = await lottieZip(data, {
       zipPath: path.join(__dirname, 'zip'),
