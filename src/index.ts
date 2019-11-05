@@ -1,11 +1,5 @@
 import * as compressing from 'compressing';
-import * as os from 'os';
-import * as path from 'path';
-import * as fse from 'fs-extra';
-import * as fs from 'fs';
-import * as crypto from 'crypto';
-import * as pump from 'pump';
-import { rimraf } from 'mz-modules';
+import * as streamToBuffer from 'stream-to-buf';
 
 interface ILottieJSONAsset {
   id: string;
@@ -51,35 +45,7 @@ interface ILottieJSON {
   markers: ILottieJSONLayer[];
 }
 
-// 压缩文件夹里面的lottie内容 zip 到指定目录
-const packLottie = async (source: string, dest: string) => {
-  // 创建zip流
-  const zipStream = new compressing.zip.Stream();
-  // 添加json数据
-  zipStream.addEntry(path.join(source, 'data.json'));
-  // 添加images文件夹
-  zipStream.addEntry(path.join(source, 'images'));
-  // 输出流
-  const destStream = fs.createWriteStream(dest);
-  // 等待流执行完毕返回
-  return new Promise((resolve, reject) => {
-    pump(zipStream, destStream, (err) => {
-      if (err) { return reject(err); }
-      resolve();
-    });
-  });
-};
-
-// 生成随机目录
-const randomSavePath = (pathname: string): string => {
-  const hash = crypto.randomBytes(7).toString('hex');
-  const basePath = path.join(pathname, hash, 'lottiezip');
-  fse.ensureDirSync(basePath);
-  fse.ensureDirSync(basePath + '/images');
-  return basePath;
-};
-
-const zipJSON = async (lottieData: string, options?: object) => {
+const zipJSON = async (lottieData: string | ILottieJSON, options?: object) => {
   let lottieObj;
   if (typeof lottieData === 'string') {
     try {
@@ -91,48 +57,33 @@ const zipJSON = async (lottieData: string, options?: object) => {
   } else if (typeof lottieData === 'object') {
     lottieObj = JSON.parse(JSON.stringify(lottieData));
   }
-  const zipPath = os.tmpdir();
-  const defaultOptions = {
-    zipPath,
-    ...options,
-  };
-  const tempDist = randomSavePath(defaultOptions.zipPath);
-  // 抽取json的图片 base64
-  lottieObj.assets = await Promise.all(
-    lottieObj.assets.map(async asset => {
-      // 非 img 数据，则原数据返回
-      if (!asset.p) {
-        return asset;
-      }
-      // 不处理 base64 和 远程资源
-      if (!asset.p.includes('base64,')) {
-        return asset;
-      }
-      const imgFileName = `img_${asset.id}.png`;
-      const imageBase64 = asset.p.replace(/^data:image\/png;base64,/, '');
-      fs.writeFileSync(path.join(tempDist, 'images/', imgFileName), imageBase64, 'base64');
-      return {
-        ...asset,
-        e: 1,
-        u: 'images/',
-        p: imgFileName,
-      };
-    }),
-  );
-  // json 转 buffer
-  const compressLottieBuffer = Buffer.from(JSON.stringify(lottieObj));
-  // buffer 写入临时文件
-  const lottieFilePath = path.join(tempDist, 'data.json');
-  fs.writeFileSync(lottieFilePath, compressLottieBuffer);
-  // 压缩文件
-  const zipDist = path.join(defaultOptions.zipPath, 'lottie-compress.zip');
-  await packLottie(tempDist, zipDist);
-  const zipBuffer = fs.readFileSync(zipDist);
-  // 删除临时文件
-  await rimraf(tempDist);
-  await rimraf(path.dirname(zipDist));
-  // 返回压缩文件的buffer
-  return zipBuffer;
+
+  // 创建zip流
+  const zipStream = new compressing.zip.Stream();
+  lottieObj.assets.forEach(asset => {
+    // 非 img 数据，则原数据返回
+    if (!asset.p) {
+      return;
+    }
+    // 不处理 base64 和 远程资源
+    if (!asset.p.includes('base64,')) {
+      return;
+    }
+
+    const imgFileName = `img_${asset.id}.png`;
+    const imageBase64 = asset.p.replace(/^data:image\/png;base64,/, '');
+    zipStream.addEntry(Buffer.from(imageBase64, 'base64'), {
+      relativePath: 'images/' + imgFileName,
+    });
+    asset.u = 'images/';
+    asset.p = imgFileName;
+  });
+
+  zipStream.addEntry(Buffer.from(JSON.stringify(lottieObj)), {
+    relativePath: 'data.json',
+  });
+
+  return await streamToBuffer(zipStream);
 };
 
 export default zipJSON;
