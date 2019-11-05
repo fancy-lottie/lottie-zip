@@ -11,7 +11,8 @@
     "test:w": "egg-bin test --typescript --watch test/**/*.test.ts --watch-extensions ts",
     "dev": "tsc",
     "dev:w": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "test-travis": "egg-bin cov --typescript"
   },
   "keywords": [
     "lottie",
@@ -30,16 +31,19 @@
     }
   ],
   "license": "ISC",
+  "engines": {
+    "node": ">=8"
+  },
   "devDependencies": {
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.2",
-    "ts-loader": "^5.3.0",
     "egg-bin": "^4.9.0",
+    "ts-loader": "^5.3.0",
     "tslint": "^5.11.0",
     "typescript": "^3.2.1"
   },
   "dependencies": {
     "compressing": "^1.4.0",
-    "crypto": "^1.0.1",
     "fs-extra": "^8.1.0",
     "mz-modules": "^2.1.0",
     "pump": "^3.0.0"
