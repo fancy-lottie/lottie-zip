@@ -60,6 +60,8 @@ const zipJSON = async (lottieData: string | ILottieJSON, options?: object) => {
 
   // 创建zip流
   const zipStream = new compressing.zip.Stream();
+
+  const IMG_BASE64_RE = /^data:image\/(\S+);base64,(\S+)/i;
   lottieObj.assets.forEach(asset => {
     // 非 img 数据，则原数据返回
     if (!asset.p) {
@@ -70,8 +72,10 @@ const zipJSON = async (lottieData: string | ILottieJSON, options?: object) => {
       return;
     }
 
-    const imgFileName = `img_${asset.id}.png`;
-    const imageBase64 = asset.p.replace(/^data:image\/png;base64,/, '');
+    const matchData = asset.p.match(IMG_BASE64_RE) || [];
+    const imgFileName = `img_${asset.id}.${matchData[1] || 'png'}`;
+    const imageBase64 = matchData[2] || '';
+
     zipStream.addEntry(Buffer.from(imageBase64, 'base64'), {
       relativePath: 'images/' + imgFileName,
     });
