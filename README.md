@@ -31,13 +31,31 @@ npm i -S lottie-zip
 
 ## Usage
 
-```bash
+```js
 import lottieZip from 'lottie-zip';
 
 (async () => {
-  const lottieZipBuffer = await lottieZip(data, {
-    zipPath: path.join(__dirname, 'zip'),
-  });
+  const lottieZipBuffer = await lottieZip(data);
   fs.writeFileSync(path.join(__dirname, 'lottie.zip'), lottieZipBuffer);
 })();
+```
+
+## API
+
+### zip2json
+
+```js
+import { zip2json } from 'lottie-zip';
+
+// ...
+const lottieJSON = await zip2json(zipReadStream);
+```
+
+### json2zip
+
+```js
+import { json2zip } from 'lottie-zip';
+
+// ...
+const zipBuffer = await json2zip(json);
 ```
