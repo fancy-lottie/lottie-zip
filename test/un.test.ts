@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
-import zipToJSON from '../src/zip_to_json';
+import { zip2json } from '../src/index';
 
 const zipStream = fs.createReadStream(__dirname + '/fixtures/lottie_unzipper.zip');
 
 describe('zip_to_json', () => {
   it('zipToJSON success', async () => {
-    const bufs: any = await zipToJSON(zipStream);
+    const bufs: any = await zip2json(zipStream);
     assert(bufs.length);
     const buf = bufs[0];
     assert(typeof buf.assets[0].p === 'string');
@@ -14,7 +14,7 @@ describe('zip_to_json', () => {
 
   it('zipToJSON error', async () => {
     try {
-      await zipToJSON(fs.createReadStream(__dirname + '/fixtures/lottie_error.zip'));
+      await zip2json(fs.createReadStream(__dirname + '/fixtures/lottie_error.zip'));
     } catch (err) {
       assert(err instanceof Error);
     }

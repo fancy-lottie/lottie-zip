@@ -1,5 +1,6 @@
 import * as compressing from 'compressing';
 import * as streamToBuffer from 'stream-to-buf';
+import zip2json from './zip_to_json';
 
 interface ILottieJSONAsset {
   id: string;
@@ -90,4 +91,10 @@ const zipJSON = async (lottieData: string | ILottieJSON, options?: object) => {
   return await streamToBuffer(zipStream);
 };
 
+const json2zip = zipJSON;
+
 export default zipJSON;
+export {
+  zip2json,
+  json2zip,
+};
