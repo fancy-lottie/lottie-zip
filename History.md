@@ -1,4 +1,10 @@
 
+1.1.1 / 2019-12-04
+==================
+
+**fixes**
+  * [[`4fbf167`](http://github.com/Lottie-Lint/lottie-zip/commit/4fbf167a91da77886b45d3daa329b190e2500ba2)] - fix: 修复路径后缀写死问题 (#7) (Ink <<chceyes@gmail.com>>)
+
 1.1.0 / 2019-12-04
 ==================
 
