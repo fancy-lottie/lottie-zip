@@ -21,8 +21,8 @@ const zipToJSON = (stream: any) => {
       }
 
       if (header.type === 'file') {
-        if (header.name.includes('data.json')) {
-          const jsonPath = header.name.replace('data.json', '');
+        if (path.extname(header.name) === '.json') {
+          const jsonPath = path.dirname(header.name);
           jsonStreams[jsonPath] = stream;
         } else {
           imageStreams[header.name] = stream;
