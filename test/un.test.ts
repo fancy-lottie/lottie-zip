@@ -27,4 +27,9 @@ describe('zip_to_json', () => {
       assert(err instanceof Error);
     }
   });
+
+  it('zipToJSON no lottie return []', async () => {
+    const bufs: any = await zip2json(fs.createReadStream(__dirname + '/fixtures/no_lottie.zip'));
+    assert(!bufs.length);
+  });
 });

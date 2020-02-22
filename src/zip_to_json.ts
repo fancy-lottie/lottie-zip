@@ -36,6 +36,11 @@ const zipToJSON = (stream: any) => {
         const jsonBuf = await streamToBuf(jsonStream);
         const lottieJson = JSON.parse(jsonBuf.toString());
 
+        // NOTE 防御非 Lottie json 数据
+        if (!lottieJson.assets || !lottieJson.layers) {
+          return null;
+        }
+
         lottieJson.assets = await Promise.all(
           lottieJson.assets.map(async (asset: any) => {
             if (!asset.u && !asset.p) { return asset; }
@@ -62,7 +67,9 @@ const zipToJSON = (stream: any) => {
         return lottieJson;
       });
 
-      Promise.all(bufList).then(bufs => resolve(bufs));
+      Promise.all(bufList).then(bufs => {
+        resolve(bufs.filter(buf => !!buf));
+      });
     });
   });
 };
