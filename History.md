@@ -1,4 +1,10 @@
 
+1.1.2 / 2020-02-24
+==================
+
+**fixes**
+  * [[`a042609`](http://github.com/Lottie-Lint/lottie-zip/commit/a0426090acf0de5b09455b65d48b1f1ae0882e8b)] - fix: 处理非 Lottie json 文件解压问题 (#8) (Ink <<chceyes@gmail.com>>)
+
 1.1.1 / 2019-12-04
 ==================
 
