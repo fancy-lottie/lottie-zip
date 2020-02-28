@@ -12,6 +12,7 @@
     "dev": "tsc",
     "dev:w": "tsc --watch",
     "build": "tsc",
+    "prepublish": "npm run build",
     "test-travis": "egg-bin cov --typescript"
   },
   "keywords": [
