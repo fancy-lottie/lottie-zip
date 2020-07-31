@@ -46,8 +46,21 @@ interface ILottieJSON {
   markers: ILottieJSONLayer[];
 }
 
-const zipJSON = async (lottieData: string | ILottieJSON, options?: object) => {
+const zipJSON = async (lottieData: string | ILottieJSON, options?: { 
+  images?: boolean;
+  fileName?: string;
+ }) => {
   let lottieObj;
+  const defaultOptions = {
+    images: true,
+    fileName: 'data.json',
+  };
+
+  options = {
+    ...defaultOptions,
+    ...options,
+  };
+
   if (typeof lottieData === 'string') {
     try {
       lottieObj = JSON.parse(lottieData);
@@ -61,31 +74,33 @@ const zipJSON = async (lottieData: string | ILottieJSON, options?: object) => {
 
   // 创建zip流
   const zipStream = new compressing.zip.Stream();
-
   const IMG_BASE64_RE = /^data:image\/(\S+);base64,(\S+)/i;
-  lottieObj.assets.forEach(asset => {
-    // 非 img 数据，则原数据返回
-    if (!asset.p) {
-      return;
-    }
-    // 不处理 base64 和 远程资源
-    if (!asset.p.includes('base64,')) {
-      return;
-    }
 
-    const matchData = asset.p.match(IMG_BASE64_RE) || [];
-    const imgFileName = `img_${asset.id}.${matchData[1] || 'png'}`;
-    const imageBase64 = matchData[2] || '';
-
-    zipStream.addEntry(Buffer.from(imageBase64, 'base64'), {
-      relativePath: 'images/' + imgFileName,
+  if (options.images) {
+    lottieObj.assets.forEach(asset => {
+      // 非 img 数据，则原数据返回
+      if (!asset.p) {
+        return;
+      }
+      // 不处理 base64 和 远程资源
+      if (!asset.p.includes('base64,')) {
+        return;
+      }
+  
+      const matchData = asset.p.match(IMG_BASE64_RE) || [];
+      const imgFileName = `img_${asset.id}.${matchData[1] || 'png'}`;
+      const imageBase64 = matchData[2] || '';
+  
+      zipStream.addEntry(Buffer.from(imageBase64, 'base64'), {
+        relativePath: 'images/' + imgFileName,
+      });
+      asset.u = 'images/';
+      asset.p = imgFileName;
     });
-    asset.u = 'images/';
-    asset.p = imgFileName;
-  });
+  }
 
   zipStream.addEntry(Buffer.from(JSON.stringify(lottieObj)), {
-    relativePath: 'data.json',
+    relativePath: options.fileName,
   });
 
   return await streamToBuffer(zipStream);

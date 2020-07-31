@@ -6,21 +6,15 @@ const data = fs.readFileSync(path.resolve(__dirname, 'fixtures/sage.json')).toSt
 
 describe('lottieZip', () => {
   it('lottieZip', async () => {
-    const lottieZipBuffer = await lottieZip(data, {
-      zipPath: path.join(__dirname, 'zip'),
-    });
+    const lottieZipBuffer = await lottieZip(data, {});
     fs.writeFileSync(path.join(__dirname, 'lottie.zip'), lottieZipBuffer);
     console.log('lottieZipBuffer', lottieZipBuffer);
   });
   it('lottieJson is lottie json object', async () => {
-    await lottieZip(JSON.parse(data), {
-      zipPath: path.join(__dirname, 'zip'),
-    });
+    await lottieZip(JSON.parse(data), {});
   });
   it('lottieJson is empty string', async () => {
-    const res = await lottieZip('', {
-      zipPath: path.join(__dirname, 'zip'),
-    });
+    const res = await lottieZip('', {});
     assert.equal(res, null);
   });
 });
