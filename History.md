@@ -1,4 +1,13 @@
 
+1.1.3 / 2020-07-31
+==================
+
+**features**
+  * [[`3a1ad4b`](http://github.com/Lottie-Lint/lottie-zip/commit/3a1ad4bb36be524baf44c789caf4da13c7ee6d14)] - feat: 支持options (chenpx976 <<chenpx976@gmail.com>>)
+
+**others**
+  * [[`d465fa6`](http://github.com/Lottie-Lint/lottie-zip/commit/d465fa64f88c81799561bf851e7320f2655e03c3)] - chore: 添加 prepublish script (nightink <<chceyes@gmail.com>>)
+
 1.1.2 / 2020-02-24
 ==================
 
